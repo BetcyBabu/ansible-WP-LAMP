@@ -54,12 +54,16 @@
       register: mariadb_status
 
     - name: "Restarting/Enabling Mariadb"
+      when: mariadb_status.changed == true
       service:
         name: mariadb
         state: restarted
         enabled: true
 
+
+
     - name: "Setup Root password"
+      when: mariadb_status.changed == true
       mysql_user:
         login_user: root
         login_password: ""
@@ -69,6 +73,7 @@
 
 
     - name: "Create /root/.my.cnf"
+      when: mariadb_status.changed == true
       template:
         src:  my.cnf
         dest: /root/.my.cnf
@@ -76,6 +81,7 @@
         group: root
 
     - name: "Removing anonymous users"
+      when: mariadb_status.changed == true
       mysql_user:
         config_file: /root/.my.cnf
         host_all: true
@@ -83,6 +89,7 @@
         state: absent
 
     - name: "Remove test database"
+      when: mariadb_status.changed == true
       mysql_user:
         config_file: /root/.my.cnf
         name: test
